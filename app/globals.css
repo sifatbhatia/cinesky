@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 11, 29, 81;
+  --background-start-rgb: 209, 198, 173;
+  --background-end-rgb: 187, 173, 160;
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --primary: 280 18% 57%;
+  --primary-foreground: 0 0% 98%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 209, 198, 173;
+    --background-start-rgb: 11, 29, 81;
+    --background-end-rgb: 121, 117, 150;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  
+  h1 {
+    @apply text-4xl font-bold;
+  }
+  
+  h2 {
+    @apply text-3xl font-semibold;
+  }
+  
+  h3 {
+    @apply text-2xl font-semibold;
+  }
+  
+  h4 {
+    @apply text-xl font-medium;
+  }
+  
+  p, span, div, input, textarea, select {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-mauve text-white hover:bg-lavender transition-colors px-4 py-2 rounded-md;
+  }
+  
+  .btn-secondary {
+    @apply bg-taupe text-navy hover:bg-sand transition-colors px-4 py-2 rounded-md;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-lg p-6 border border-taupe;
+  }
+} 
