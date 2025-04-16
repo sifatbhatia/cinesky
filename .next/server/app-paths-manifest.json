@@ -1,4 +1,10 @@
 {
-  "/search/page": "app/search/page.js",
-  "/home/page": "app/home/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/home/page": "app/home/page.js",
+  "/login/page": "app/login/page.js",
+  "/mapview/page": "app/mapview/page.js",
+  "/page": "app/page.js",
+  "/register/page": "app/register/page.js",
+  "/search/page": "app/search/page.js"
 }

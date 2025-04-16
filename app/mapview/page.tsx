@@ -1,262 +1,98 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/navbar';
 import { useAuth } from '../contexts/AuthContext';
-import Navbar from '../components/Navbar';
-import API from '../lib/api';
-import Script from 'next/script';
-import { useTheme } from '../contexts/ThemeContext';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
-declare module 'leaflet';
+import { useRouter } from 'next/navigation';
+import { useWeather } from '../hooks/useWeather';
+import { FiMapPin, FiNavigation, FiMap } from 'react-icons/fi';
 
 export default function MapView() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
-  const { theme } = useTheme();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [mapInitialized, setMapInitialized] = useState(false);
-  
+  const { weather, loading } = useWeather();
+  const [mapUrl, setMapUrl] = useState('');
+
   useEffect(() => {
-    if (!currentUser) {
+    // Redirect if not authenticated
+    if (!user && !loading) {
       router.push('/login');
     }
-  }, [currentUser, router]);
+  }, [user, router, loading]);
 
   useEffect(() => {
-    if (mapInitialized) return; // Prevent re-initialization
-
-    // Get user's location or set default coordinates
-    const latitude = 40.7128; // Default to New York
-    const longitude = -74.0060;
-
-    // Initialize the map
-    const map = L.map('map').setView([latitude, longitude], 10);
-
-    // Add OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(map);
-
-    setMapInitialized(true); // Mark map as initialized
-  }, [mapInitialized]);
-
-  const initMap = async () => {
-    setLoading(true);
-    setError('');
-    
-    try {
-      // Check if L (Leaflet) is available
-      if (typeof window !== 'undefined' && window.L)  {
-        // Get current position
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            
-            // Initialize the map
-            const map = L.map('map').setView([latitude, longitude], 10);
-            
-            // Add OpenStreetMap tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            
-            // Add a marker for the user's location
-            const marker = L.marker([latitude, longitude]).addTo(map);
-            marker.bindPopup("<b>Your Location</b>").openPopup();
-            
-            // Fetch weather data for the map
-            fetchWeatherData(latitude, longitude, map);
-          },
-          (err) => {
-            console.error('Geolocation error:', err);
-            // Default to New York if geolocation fails
-            const defaultLat = 40.7128;
-            const defaultLon = -74.0060;
-            
-            const map = L.map('map').setView([defaultLat, defaultLon], 10);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            
-            fetchWeatherData(defaultLat, defaultLon, map);
-          }
-        );
-      } else {
-        throw new Error('Leaflet library failed to load');
-      }
-    } catch (err) {
-      console.error('Map initialization error:', err);
-      setError('Failed to load map. Please try again later.');
-      setLoading(false);
+    // Set map URL when weather data is available
+    if (weather?.lat && weather?.lon) {
+      const zoom = 12;
+      setMapUrl(`https://www.openstreetmap.org/export/embed.html?bbox=${weather.lon - 0.1}%2C${weather.lat - 0.1}%2C${weather.lon + 0.1}%2C${weather.lat + 0.1}&layer=mapnik&marker=${weather.lat}%2C${weather.lon}`);
     }
-  };
-  
-  const fetchWeatherData = async (lat, lon, map) => {
-    try {
-      const response = await fetch(
-        `${API.base}weather?lat=${lat}&lon=${lon}&api_key=${API.key}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Weather data fetch failed');
-      }
-      
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error('Weather API response was not successful');
-      }
-      
-      // Add weather data to the map
-      // This is a simplified example - in a real app, you would create 
-      // markers for each location with weather data
-      
-      // Example: Add temperature markers for nearby cities
-      const cities = [
-        { name: 'London', lat: 51.5074, lon: -0.1278 },
-        { name: 'New York', lat: 40.7128, lon: -74.0060 },
-        { name: 'Tokyo', lat: 35.6762, lon: 139.6503 },
-        { name: 'Sydney', lat: -33.8688, lon: 151.2093 },
-        { name: 'Paris', lat: 48.8566, lon: 2.3522 },
-        { name: 'Berlin', lat: 52.5200, lon: 13.4050 },
-        { name: 'Cairo', lat: 30.0444, lon: 31.2357 },
-        { name: 'Mumbai', lat: 19.0760, lon: 72.8777 }
-      ];
-      
-      // Only show cities that are relatively close to the user's location
-      // (This is a simplified example)
-      const nearbyCity = cities.find(city => {
-        const distance = Math.sqrt(
-          Math.pow(city.lat - lat, 2) + 
-          Math.pow(city.lon - lon, 2)
-        );
-        return distance < 20; // Arbitrary distance threshold
-      }) || cities[0]; // Default to first city if none are nearby
-      
-      // Add a marker for the nearby city
-      const cityMarker = L.marker([nearbyCity.lat, nearbyCity.lon]).addTo(map);
-      
-      // Temperature display
-      const tempIcon = L.divIcon({
-        className: 'temp-icon',
-        html: `<div style="background-color: rgba(255,255,255,0.8); padding: 5px; border-radius: 4px; font-weight: bold;">${Math.round(data.data.currently.temperature)}°C</div>`,
-        iconSize: [40, 20],
-        iconAnchor: [20, 10]
-      });
-      
-      L.marker([nearbyCity.lat, nearbyCity.lon], { icon: tempIcon }).addTo(map);
-      
-      // Add a simple weather layer (circle with color based on condition)
-      const weatherCondition = data.data.currently.icon;
-      let circleColor = '#f0f9ff'; // Default light blue
-      
-      if (weatherCondition.includes('clear')) {
-        circleColor = '#fde047'; // Yellow for clear/sunny
-      } else if (weatherCondition.includes('cloud')) {
-        circleColor = '#94a3b8'; // Gray for cloudy
-      } else if (weatherCondition.includes('rain')) {
-        circleColor = '#3b82f6'; // Blue for rain
-      } else if (weatherCondition.includes('snow')) {
-        circleColor = '#f8fafc'; // White for snow
-      }
-      
-      L.circle([lat, lon], {
-        color: circleColor,
-        fillColor: circleColor,
-        fillOpacity: 0.3,
-        radius: 20000 // 20km radius
-      }).addTo(map);
-      
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      setLoading(false);
-      setError('Failed to fetch weather data. Basic map is still available.');
-    }
-  };
+  }, [weather]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sand to-taupe">
+    <div className="min-h-screen bg-gradient-to-tr from-[#0F0F11] to-[#1A1A1E] text-white padding-container">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-6 text-navy">Weather Map</h1>
-        
-        {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
-            {error}
-          </div>
-        )}
-        
-        <div className="card">
-          <div className="mb-4">
-            <p className="text-navy">
-              View weather conditions on an interactive map. Click on a location to see detailed weather information.
-            </p>
+      <div className="container mx-auto px-4 pt-32 pb-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <FiMap className="text-primary" size={36} />
+            <h1 className="text-[64px] font-extrabold tracking-tight leading-none">
+              Map View
+            </h1>
           </div>
           
           {loading ? (
-            <div className="h-96 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy"></div>
-              <span className="ml-2 text-navy">Loading map...</span>
+            <div className="flex flex-col items-center justify-center py-24">
+              <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-8"></div>
+              <p className="text-xl text-secondary">Loading location data...</p>
+            </div>
+          ) : weather ? (
+            <div className="space-y-6">
+              <div className="bg-[#1C1D22]/60 backdrop-blur-xl rounded-[32px] p-8">
+                <div className="flex items-center gap-4 mb-4">
+                  <FiMapPin className="text-primary" size={24} />
+                  <h2 className="text-3xl font-bold">
+                    {weather.city}, {weather.country}
+                  </h2>
+                </div>
+                <div className="flex items-center gap-3 text-secondary">
+                  <FiNavigation size={18} />
+                  <p className="text-lg">
+                    {weather?.lat?.toFixed(4) ?? '0.0000'}°N, {weather?.lon?.toFixed(4) ?? '0.0000'}°E
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-[#1C1D22]/60 backdrop-blur-xl rounded-[32px] overflow-hidden">
+                <div className="relative h-[600px]">
+                  {mapUrl ? (
+                    <iframe
+                      src={mapUrl}
+                      title="Location Map"
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      className="absolute inset-0"
+                    ></iframe>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-secondary">Loading map...</p>
+                    </div>
+                  )}
+                </div>
+                <div className="p-6 border-t border-white/5">
+                  <p className="text-secondary text-sm">
+                    Note: This is a simplified map view. In a production environment, you would
+                    implement a more advanced mapping solution with interactive features.
+                  </p>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="relative h-96 rounded-md overflow-hidden">
-              <div id="map" className="w-full h-full"></div>
-              <style jsx>{`
-                .temp-icon {
-                  background: none;
-                  border: none;
-                }
-              `}</style>
+            <div className="bg-red-900/10 border border-red-500/20 rounded-[32px] p-8">
+              <p className="text-red-400 text-lg">Failed to load map data. Please try again later.</p>
             </div>
           )}
-          
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-md shadow border border-taupe">
-              <h3 className="text-lg font-medium text-navy mb-2">Map Legend</h3>
-              <ul className="space-y-2 text-lavender">
-                <li className="flex items-center">
-                  <span className="w-4 h-4 bg-blue-500 rounded-full mr-2"></span>
-                  Rain
-                </li>
-                <li className="flex items-center">
-                  <span className="w-4 h-4 bg-gray-400 rounded-full mr-2"></span>
-                  Clouds
-                </li>
-                <li className="flex items-center">
-                  <span className="w-4 h-4 bg-yellow-400 rounded-full mr-2"></span>
-                  Clear
-                </li>
-                <li className="flex items-center">
-                  <span className="w-4 h-4 bg-white border border-gray-400 rounded-full mr-2"></span>
-                  Snow
-                </li>
-              </ul>
-            </div>
-            
-            <div className="bg-white p-4 rounded-md shadow border border-taupe">
-              <h3 className="text-lg font-medium text-navy mb-2">Temperature</h3>
-              <div className="h-6 w-full bg-gradient-to-r from-blue-600 via-green-500 to-red-600 rounded-md"></div>
-              <div className="flex justify-between mt-1">
-                <span className="text-xs text-lavender">Cold</span>
-                <span className="text-xs text-lavender">Hot</span>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-md shadow border border-taupe">
-              <h3 className="text-lg font-medium text-navy mb-2">Wind Speed</h3>
-              <div className="h-6 w-full bg-gradient-to-r from-green-400 to-blue-600 rounded-md"></div>
-              <div className="flex justify-between mt-1">
-                <span className="text-xs text-lavender">Calm</span>
-                <span className="text-xs text-lavender">Strong</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

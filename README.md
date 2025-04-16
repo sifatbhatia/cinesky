@@ -1,81 +1,82 @@
-# Next.js Weather App
+# CineSky - Weather App
 
-A beautiful and modern weather application built with Next.js, TypeScript, Tailwind CSS, and Firebase authentication.
+CineSky is a modern weather application built with Next.js that provides real-time weather information and forecasts. The app features a clean, responsive UI and integrates with OpenWeatherMap API for accurate weather data.
 
 ## Features
 
-- **Real-time Weather Data**: Get current weather conditions based on your location
-- **Search Functionality**: Search for weather information by city name
-- **Weather Map**: Visual representation of weather patterns
-- **City List View**: View weather data for major cities around the world
-- **User Authentication**: Secure login and registration using Firebase
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Modern UI**: Beautiful interface using a custom color palette
+- **Real-time Weather Information**: Get current weather for your location
+- **Weather Search**: Look up weather in any city worldwide
+- **Location Management**: Save and manage your favorite locations
+- **Map View**: View your current location on a map
+- **User Authentication**: Secure user accounts with Firebase
+- **Responsive Design**: Works seamlessly across desktop and mobile devices
 
 ## Technology Stack
 
-- **Next.js 14**: React framework for building the user interface
-- **TypeScript**: For type-safe code and better developer experience
-- **Tailwind CSS**: For styling and responsive design
-- **Firebase Authentication**: For user management
-- **OpenWeatherMap API**: For weather data
-
-## Color Palette
-
-The application uses a custom color palette:
-- Sand (#D1C6AD)
-- Taupe (#BBADA0)
-- Mauve (#A1869E)
-- Lavender (#797596)
-- Navy (#0B1D51)
+- **Framework**: Next.js with TypeScript
+- **Styling**: Tailwind CSS
+- **Authentication**: Firebase Authentication
+- **API**: OpenWeatherMap API
+- **Icons**: React Icons
+- **Weather Animations**: React Animated Weather
+- **Time/Date**: React Live Clock
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18 or later
+- npm or yarn
+
+### Installation
+
 1. Clone the repository
-2. Install dependencies:
-   ```bash
+   ```
+   git clone https://github.com/yourusername/cinesky.git
+   cd cinesky
+   ```
+
+2. Install dependencies
+   ```
    npm install
    ```
 
-3. Create a `.env.local` file in the root directory with the following variables:
+3. Set up environment variables
+   Create a `.env.local` file in the root directory with the following variables:
    ```
-   NEXT_PUBLIC_WEATHER_API_KEY=your_openweathermap_api_key
-   NEXT_PUBLIC_WEATHER_API_BASE=https://api.openweathermap.org/data/2.5/
-   
    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
    NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
-   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_firebase_measurement_id
+   
+   NEXT_PUBLIC_WEATHER_API_KEY=your_openweathermap_api_key
    ```
 
-4. Run the development server:
-   ```bash
+4. Run the development server
+   ```
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Build for Production
+## Building for Production
 
-```bash
+```
 npm run build
 ```
 
-Then start the production server:
+Then to start the production server:
 
-```bash
+```
 npm start
 ```
 
+## Deployment
+
+This project can be deployed to Vercel, Netlify, or any other hosting service that supports Next.js applications.
+
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-- OpenWeatherMap for providing the weather data API
-- Firebase for authentication services
-- Icons from various free icon libraries 
+This project is licensed under the MIT License

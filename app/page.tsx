@@ -2,23 +2,18 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from './contexts/AuthContext';
+import Image from "next/image";
 
 export default function Home() {
-  const { currentUser } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (currentUser) {
-      router.push('/home');
-    } else {
-      router.push('/login');
-    }
-  }, [currentUser, router]);
+    router.push('/register');
+  }, [router]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900" />
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
     </div>
   );
-} 
+}
