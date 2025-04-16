@@ -1,0 +1,61 @@
+.health-check {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.health-check h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.status-indicator {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.status-indicator.checking {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.status-indicator.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-indicator.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.message {
+  color: #155724;
+  margin: 10px 0;
+}
+
+.error {
+  color: #721c24;
+  margin: 10px 0;
+}
+
+.connection-details {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+
+.connection-details p {
+  margin: 5px 0;
+}
+
+.connection-details strong {
+  color: #555;
+} 

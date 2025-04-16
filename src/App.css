@@ -1,0 +1,73 @@
+.register {
+  display: grid;
+  place-items: center;
+  margin-top:15rem
+}
+
+.list {
+  display: grid;
+  place-items: center;
+  margin-bottom: 2rem;
+}
+
+table {
+  margin-top:2rem;
+}
+
+.weather {
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgb(253, 213, 213);
+  padding:2rem;
+  border-radius:20px;
+
+}
+.navbar {
+  background-color: rgb(253, 232, 232);
+  z-index: 999;
+  position: sticky;
+  top: 0;
+  width: 100%; 
+}
+.navbar-item img {
+  max-height: 6rem; 
+}
+
+.navbar-burger {
+  margin-top: 1.75rem;
+}
+
+.Info {
+  margin-top: 10px;
+  display: grid;
+  place-items: center;
+
+}
+.padding {
+  display: grid;
+  place-items: center;
+  width: 50%;
+  margin-bottom: 3rem;
+  
+}
+
+p {
+  text-align: center;
+}
+
+.call ul {
+  background-color: rgb(199, 133, 133);
+  border-radius: 20px;
+  padding: 3rem;
+  display: grid;
+  place-items: center;
+}
+
+.call a {
+  display: flex; 
+  flex-direction: row;
+  align-items: center;
+  
+}
