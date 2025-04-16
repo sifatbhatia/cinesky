@@ -1,8 +1,0 @@
-table td:not([align]), table th:not([align]) {
-    text-align: center;
-}
-
-table.table {
-    margin-left: auto;
-    margin-right: auto;
-}
