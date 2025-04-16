@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -10,24 +10,30 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [registerError, setRegisterError] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
-  const { signUp } = useAuth();
+  const { user, signUp } = useAuth();
+
+  // ✅ Redirect to /home if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/home');
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setRegisterError('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
     try {
-      setRegisterError('');
+      setError('');
       setLoading(true);
       await signUp(email, password, email.split('@')[0]);
       router.push('/home');
-    } catch (error) {
-      setRegisterError('Failed to create an account');
-      console.error('Registration error:', error);
+    } catch (err) {
+      setError('Failed to create an account');
     } finally {
       setLoading(false);
     }
@@ -39,8 +45,6 @@ export default function RegisterPage() {
         <h1 className="auth-title">CineSky</h1>
         <p className="auth-subtitle">Register</p>
       </div>
-
-      {registerError && <div className="error-message">{registerError}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="form-group">
@@ -79,6 +83,8 @@ export default function RegisterPage() {
           />
         </div>
 
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
         <button 
           type="submit" 
           className="auth-button"
@@ -88,9 +94,9 @@ export default function RegisterPage() {
         </button>
 
         <div className="auth-footer">
-          Have an account? <Link href="/login">Sign in</Link>
+          have an account? <Link href="/login">Sign in</Link>
         </div>
       </form>
     </div>
   );
-} 
+}
